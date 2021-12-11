@@ -37,7 +37,7 @@ def create_dummy_df(df, cat_cols, dummy_na):
     return df.copy()
 
 
-def plot_correlation_matrix(df_data):
+def plot_correlation_matrix(df_data, col=None):
     '''
     Function plotting correlation matrix of a data frame
     INPUT:
@@ -48,7 +48,13 @@ def plot_correlation_matrix(df_data):
     corr = df_data.corr()
     plt.subplots(figsize=(22, 18))
     cmap = sns.diverging_palette(250, 20, as_cmap=True)
-    sns.heatmap(corr, cmap=cmap, vmin=-1, vmax=1, center=0, annot=True, square=True, linewidths=1, cbar_kws={"shrink": .5});
+    
+    if col==None:
+        sns.heatmap(corr, cmap=cmap, vmin=-1, vmax=1, center=0, annot=True, square=True, linewidths=1, cbar_kws={"shrink": .5});
+    else:
+        plt.title(coll)
+        sns.heatmap(corr[[col]], cmap=cmap, vmin=-1, vmax=1, center=0, annot=True, linewidths=1, cbar_kws={"shrink": .5});
+        
 
 
 
