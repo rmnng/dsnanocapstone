@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+import math
 import seaborn as sns
 import time
 
@@ -36,12 +38,12 @@ def create_dummy_df(df, cat_cols, dummy_na):
     
     return df.copy()
 
-
 def plot_correlation_matrix(df_data, col=None):
     '''
     Function plotting correlation matrix of a data frame
     INPUT:
     df_data - data frame to plot the correlation matrix for
+    col - column to make the correlation for
     
     OUTPUT: no
     '''    
@@ -49,10 +51,8 @@ def plot_correlation_matrix(df_data, col=None):
     cmap = sns.diverging_palette(250, 20, as_cmap=True)
     
     if col==None:
-        plt.subplots(figsize=(len(df_data.columns), len(df_data.columns)*.5))
         sns.heatmap(corr, cmap=cmap, vmin=-1, vmax=1, center=0, annot=True, linewidths=1, cbar_kws={"shrink": .5});
     else:
-        plt.subplots(figsize=(5, len(df_data.columns)*.5))
         plt.title(col)
         sns.heatmap(corr[[col]], cmap=cmap, vmin=-1, vmax=1, center=0, annot=True, linewidths=1, cbar_kws={"shrink": .5});
         
@@ -68,6 +68,7 @@ def run_model(model, df_data, lst_features, target):
     target - target to be predicted
     
     OUTPUT:
+     model - trained model
      X_test - data used for test
      y_test - targets used for test
     '''    
@@ -79,77 +80,15 @@ def run_model(model, df_data, lst_features, target):
     start = time.time()
     model.fit(X_train,y_train)
     duration = time.time() - start
-    print(f'Training ran in {duration:.5f} seconds')    
+    print(f'Training duration: {duration:.5f} seconds')    
 
-    # use model score
-    score = model.score(X_test, y_test)    
-    print(f'Score: {score}')
-    
-    #calculate f1 score
-    f1 = f1_score(y_test, model.predict(X_test))
-    print(f'F1 Score: {f1:.2f}')
+    # score
+    print(f'Score of the model is {model.score(X_test, y_test):.4f}')
+
+    #f1 score
+    print(f'F1-Score of the model is {f1_score(y_test, model.predict(X_test)):.4f}')
     
     return model, X_test, y_test
-    
-
-def run_logistic_regression(df_data, lst_features, target, max_iter = 10000):
-    '''
-    INPUT:
-    df_data - data frame with data used for the logistic regression
-    lst_features - list of predictive features used in the model
-    target - target to be predicted
-    
-    OUTPUT:
-    model - trained logistic regression model
-    X_test - data used for test
-    y_test - targets used for test
-    '''    
-
-    return run_model(LogisticRegression(max_iter=max_iter), df_data, lst_features, target);
-
-def run_lightgbm_classifier(df_data, lst_features, target):
-    '''
-    INPUT:
-    df_data - data frame with data used for the LightGMB classifier
-    lst_features - list of predictive features used in the model
-    target - target to be predicted
-    
-    OUTPUT:
-    model - trained logistic regression model
-    X_test - data used for test
-    y_test - targets used for test    
-    '''    
-    
-    #split the data into train and test
-    X_train, X_test, y_train, y_test = train_test_split(df_data[lst_features], df_data[target], test_size=0.3, random_state=42)
-
-    model = LGBMClassifier(n_estimators=100,
-                         num_leaves=64,
-                         max_depth=3,
-                         learning_rate=0.1,
-                         random_state=1000,
-                         n_jobs=-1);
-    
-    return run_model(model, df_data, lst_features, target)
-
-def test_logistic_regression(df_data, lst_features, target, plot_cmatrix=False, max_iter = 10000):
-    '''
-    INPUT:
-    df_data - data frame with data used for the logistic regression
-    lst_features - list of predictive features used in the model
-    target - target to be predicted
-    
-    OUTPUT:
-    model - trained logistic regression model
-    X_test - data used for test
-    y_test - targets used for test    
-    '''    
-
-    model = LogisticRegression(penalty='l2', tol=0.0001, 
-                           C=1, fit_intercept=True, intercept_scaling=2.0, 
-                           class_weight=None, random_state=42, max_iter=max_iter);
-    
-    return run_model(model, df_data, lst_features, target)
 
 def calculate_confusion_matrix(y_test, y_pred, plot=False):
     '''
@@ -163,13 +102,12 @@ def calculate_confusion_matrix(y_test, y_pred, plot=False):
     
     cmatrix = confusion_matrix(y_test, y_pred)
     f1 = f1_score(y_test, y_pred)
-    print(f'F1 Score: {f1:.2f}')
     
     if plot == True:
-        sns.heatmap(cmatrix, annot=True,  fmt=".0f", linewidths=1, square = True, cmap='Reds', linecolor='black');
+        sns.heatmap(cmatrix, annot=True,  fmt=".0f", linewidths=1, square = True, cmap='Reds', linecolor='black', cbar=False);
         plt.ylabel('Real');
         plt.xlabel('Predicted');
+        plt.title(f'F1 Score: {f1:.4f}')
     
-    return f1, cmatrix
 
     
