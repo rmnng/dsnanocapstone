@@ -6,6 +6,7 @@
 
 <hr style="border:1px solid gray"> </hr>
 
+
 <a name="title"></a>
 ## **Goal or No Goal?**
 
@@ -37,6 +38,10 @@ In order to achieve those goals, three dataset from two different sources have b
 
 <br>
 
+To read more, see my Medium blog article:
+["Goal or No Goal?"](https://rmnng.medium.com/goal-or-no-goal-a-goal-scoring-prediction-for-shots-in-hockey-6d0e3cf7e6ca)
+<br>
+<br>
 <a name="installation"></a>
 ## *Installation*
 To open and execute all jupyter notebook in this project, install the newest [Anaconda distribution](https://docs.anaconda.com/anaconda/install/). Following python libraries have been used:
