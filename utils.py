@@ -7,6 +7,8 @@ import time
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay
+from sklearn.metrics import roc_curve
 from sklearn.metrics import f1_score
 
 from lightgbm import LGBMClassifier
@@ -14,6 +16,22 @@ from lightgbm import LGBMClassifier
 from matplotlib import pyplot as plt
 
 sns.set()
+
+def balance_binary_target(df, target):
+    '''
+    Function balancing dataset to have 50/50 distribution of binary target values (0/1)
+    INPUT:
+    df - data frame to be balanced
+    target - name of the target column based on which the dataset should be balanced
+    
+    OUTPUT: no
+    '''     
+    size = min(df[df[target]==0].shape[0], df[df[target]==1].shape[0])
+    
+    goals = df[df[target]==1].sample(size, replace=False)
+    no_goals = df[df[target]==0].sample(size, replace=False)
+    
+    return pd.concat([goals, no_goals])
 
 def create_dummy_df(df, cat_cols, dummy_na):
     '''
@@ -38,6 +56,31 @@ def create_dummy_df(df, cat_cols, dummy_na):
     
     return df.copy()
 
+
+def plot_roc_curve(model, X_test, y_test):
+    '''
+    Function plotting ROC curve
+    INPUT:
+    model - model to plot the ROC curve for
+    X_test - Predictive part of the test dataset
+    y_test - Expected values of the test dataset
+    
+    OUTPUT: no
+    ''' 
+    prob_preds = model.predict_proba(X_test)[:,1]
+    fp_rate, tp_rate, _ = roc_curve(y_test,  prob_preds)
+
+    # plot ROC curve
+    plt.figure(figsize=(5,5))
+    plt.axline([0, 0], [1, 1], color='red', linestyle='dashed',label='random guess')
+    plt.plot(fp_rate, tp_rate, label='roc curve')
+    plt.ylabel('True Positive Rate')
+    plt.xlabel('False Positive Rate')
+    plt.xlim(0, 1)
+    plt.ylim(0, 1)
+    plt.legend()
+    plt.show()
+
 def plot_correlation_matrix(df_data, col=None):
     '''
     Function plotting correlation matrix of a data frame
@@ -56,39 +99,6 @@ def plot_correlation_matrix(df_data, col=None):
         plt.title(col)
         sns.heatmap(corr[[col]], cmap=cmap, vmin=-1, vmax=1, center=0, annot=True, linewidths=1, cbar_kws={"shrink": .5});
         
-
-
-
-def run_model(model, df_data, lst_features, target):
-    '''
-    INPUT:
-    model - model to be used
-    df_data - data frame with data used for the training and scoring of the model
-    lst_features - list of predictive features used in the model
-    target - target to be predicted
-    
-    OUTPUT:
-     model - trained model
-     X_test - data used for test
-     y_test - targets used for test
-    '''    
-    
-    #split the data into train and test
-    X_train, X_test, y_train, y_test = train_test_split(df_data[lst_features], df_data[target], test_size=0.3, random_state=42)
-
-    # start trainig
-    start = time.time()
-    model.fit(X_train,y_train)
-    duration = time.time() - start
-    print(f'Training duration: {duration:.5f} seconds')    
-
-    # score
-    print(f'Score of the model is {model.score(X_test, y_test):.4f}')
-
-    #f1 score
-    print(f'F1-Score of the model is {f1_score(y_test, model.predict(X_test)):.4f}')
-    
-    return model, X_test, y_test
 
 def calculate_confusion_matrix(y_test, y_pred, plot=False):
     '''
@@ -109,5 +119,20 @@ def calculate_confusion_matrix(y_test, y_pred, plot=False):
         plt.xlabel('Predicted');
         plt.title(f'F1 Score: {f1:.4f}')
     
-
     
+def plot_confusion_matrix(model, X_test, y_test):    
+    '''
+    Function plotting confusion matrix for a trained model
+    INPUT:
+    model - model to plot the confusion matrix for
+    X_test - Predictive part of the test dataset
+    y_test - Expected values of the test dataset    
+    OUTPUT: no
+    ''' 
+    bin_preds = model.predict(X_test)
+    cm = confusion_matrix(y_test, bin_preds, labels=model.classes_)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=model.classes_ )
+    disp.plot()
+    plt.show()
+    
+
