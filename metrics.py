@@ -85,7 +85,7 @@ def init_metrics_file():
     idx = pd.MultiIndex.from_product([['LogReg', 'LGBM', 'KNC'],
                                       ['accuracy', 'f1-score', 'auc-roc', 'precision', 'recall']],
                                      names=['Classifier', 'Metric'])
-    col = ['1_unbalanced', '2_weighted', '3_balanced', '4_with_distance', '5_with_angle', '6_with_player_ids', '7_with_player_stats', '8_with_player_salary', '9_short_dist', '10_long_dist', '11_tuned']
+    col = ['first_dataset', 'balanced', 'with_distance', 'with_angle', 'with_player_ids', 'with_player_stats', 'with_player_salary', 'short_dist', 'long_dist']
 
     df = pd.DataFrame('-', idx, col)
     df.to_csv('data/results.csv')

@@ -35,13 +35,8 @@ In order to achieve those goals, three dataset from two different sources have b
 - [NHL Player Salaries](https://www.kaggle.com/camnugent/predict-nhl-player-salaries) (player statistics, incl. salaries)
 - [NHL Game Data](https://www.kaggle.com/martinellis/nhl-game-data) (Game, team, player and plays information including x,y coordinates)
 - [World Cities](https://simplemaps.com/data/world-cities) (GPS coordinates for world cities)
-
 <br>
 
-To read more, see my Medium blog article:
-["Goal or No Goal?"](https://rmnng.medium.com/goal-or-no-goal-a-goal-scoring-prediction-for-shots-in-hockey-6d0e3cf7e6ca)
-<br>
-<br>
 <a name="installation"></a>
 ## *Installation*
 To open and execute all jupyter notebook in this project, install the newest [Anaconda distribution](https://docs.anaconda.com/anaconda/install/). Following python libraries have been used:
@@ -89,13 +84,30 @@ The core of the project are five jupyter notebooks (ordered by name) and the fil
 
 <img src="data/images/3_shots.jpg" alt="NHL" width="300" height="200">
 
-[**4_nhl_goal_prediction.ipynb**](4_nhl_goal_prediction.ipynb) - goal prediction using first binary classifier, explaining of metrics, evaluation and vizualization of the performance, classifier selection.
+[**4_nhl_logistic_regression.ipynb**](4_nhl_4_nhl_logistic_regression.ipynb) - goal prediction using first binary classifier, explaining of metrics, evaluation and vizualization of the performance.
 
 <img src="data/images/4_regression.jpg" alt="NHL" width="500" height="200">
 
-[**5_nhl_next_improvements.ipynb**](5_nhl_next_improvements.ipynb) - model improvements, feature engineering, feature importance, model finetuning
+[**6_nhl_player_features.ipynb**](6_nhl_player_features.ipynb) - Introducing new predictive features extracted from players data.
 
 <img src="data/images/5_features.jpg" alt="NHL" width="500" height="200">
+
+[**7_nhl_finetuning_experiments.ipynb**](7_nhl_finetuning_experiments.ipynb) - Provides experiments to improve model performance using feature selection, threshold finetuning, cross validation.
+
+<img src="data/images/conf_matrix.jpg" alt="NHL" width="200" height="200">
+
+[**8_nhl_evaluation.ipynb**](8_nhl_evaluation.ipynb) - Evaluates and plots performance metrics for all models.
+
+<img src="data/images/eval_plot.jpg" alt="NHL" width="500" height="200">
+
+[**9_nhl_data_pipeline.ipynb**](9_nhl_data_pipeline.ipynb) - This is the pipeline extracting data and creating all features in one function.
+
+<br>
+<br>
+
+[**model.py**](models.py) - model creation (Logistic Regression, LightGBM, KNeighborsClassifier) and traning. 
+
+[**metrics.py**](metrics.py) - utilities to evaluate models on scale and to store the results for later evaluation.
 
 [**utils.py**](utils.py) - useful re-usable functions for data manipulation, visualization and training. 
 
