@@ -28,8 +28,8 @@ def balance_binary_target(df, target):
     '''     
     size = min(df[df[target]==0].shape[0], df[df[target]==1].shape[0])
     
-    goals = df[df[target]==1].sample(size, replace=False)
-    no_goals = df[df[target]==0].sample(size, replace=False)
+    goals = df[df[target]==1].sample(size, replace=False, random_state=10)
+    no_goals = df[df[target]==0].sample(size, replace=False, random_state=10)
     
     return pd.concat([goals, no_goals])
 
@@ -120,7 +120,7 @@ def calculate_confusion_matrix(y_test, y_pred, plot=False):
         plt.title(f'F1 Score: {f1:.4f}')
     
     
-def plot_confusion_matrix(model, X_test, y_test):    
+def plot_confusion_matrix(model, y_test, preds):    
     '''
     Function plotting confusion matrix for a trained model
     INPUT:
@@ -129,8 +129,8 @@ def plot_confusion_matrix(model, X_test, y_test):
     y_test - Expected values of the test dataset    
     OUTPUT: no
     ''' 
-    bin_preds = model.predict(X_test)
-    cm = confusion_matrix(y_test, bin_preds, labels=model.classes_)
+
+    cm = confusion_matrix(y_test, preds, labels=model.classes_)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=model.classes_ )
     disp.plot()
     plt.show()

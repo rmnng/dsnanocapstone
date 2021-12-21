@@ -17,76 +17,8 @@ from utils import plot_roc_curve
 from utils import plot_confusion_matrix
 
 sns.set()
-
-def evaluate_model_ex(model, X_test, y_test, threshold = 0.5, c_matrix=True, r_curve=True):
-    '''
-    Function evaluates model and calculated various metrics. 
-    INPUT:
-    model - model to be evaluated
-    X_test - Predictive part of the test dataset
-    y_test - Expected values of the test dataset    
-    c_matrix - flag if conf matrix should be plotted
-    r_curve - flag is the ROC curve should be plotted
-
-    OUTPUT:
-    model - trained classifier
-    metrics - dict with all evaliated metrics
-    '''    
-    metrics = dict()
-    
-    cmatrix = confusion_matrix(y_test, model.predict(X_test))
-    
-    TP = cmatrix[1][1] # should be 1, was 1
-    FP = cmatrix[0][1] # should be 0, was 1
-
-    TN = cmatrix[0][0] # should be 0, was 0
-    FN = cmatrix[1][0] # should be 1, was 0
-
-    if (TP+FP) > 0: # avoid division by Zero 
-        precision = TP/(TP+FP)
-    else:
-        precision = 0
-    
-    if (TP+FN) > 0: # avoid division by Zero 
-        recall = TP/(TP+FN)
-    else:
-        recall = 0
-    
-    metrics['precision'] = precision
-    metrics['recall'] = recall
-    
-    metrics['accuracy'] = model.score(X_test, y_test)
-    metrics['f1'] = f1_score(y_test, model.predict(X_test))
-    metrics['auc'] = roc_auc_score(y_test, model.predict_proba(X_test)[:, 1])
-
-    # score
-    print('Accuracy: {0:.4f}'.format(metrics['accuracy']))
-
-    # F1 score    
-    print('F1 Score: {0:.4f}'.format(metrics['f1']))
-
-    # AUC-ROC score
-    print('AUC-ROC Score: {0:.4f}'.format(metrics['auc']))
-
-    print('-----------------------------------------')
-    
-    # TPR, FPR
-    print('Precision: {0:.4f}'.format(metrics['precision']))
-    print('Recall: {0:.4f}'.format(metrics['recall']))
-
-    print('=========================================')
-    
-    # Confusion Matrix
-    if c_matrix == True:
-        plot_confusion_matrix(model, X_test, y_test)
-
-    # ROC curve
-    if r_curve == True:
-        plot_roc_curve(model, X_test, y_test)
-        
-    return model, metrics
   
-def evaluate_model(model, X_test, y_test, threshold=.5, c_matrix=True, r_curve=True):
+def evaluate_model(model, X_test, y_test, threshold=.5, c_matrix=True, r_curve=True, suppress=False):
     '''
     Function evaluates model and calculated various metrics. 
     INPUT:
@@ -105,12 +37,15 @@ def evaluate_model(model, X_test, y_test, threshold=.5, c_matrix=True, r_curve=T
     preds = np.where(model.predict_proba(X_test)[:,1] > threshold, 1, 0)
     
     metrics['accuracy'] = accuracy_score(y_test, preds)
-    metrics['f1'] = f1_score(y_test, preds)
-    metrics['auc'] = roc_auc_score(y_test, preds)
+    metrics['f1'] = f1_score(y_test, preds, zero_division=0)
+    metrics['auc'] = roc_auc_score(y_test, model.predict_proba(X_test)[:,1])
 
-    metrics['precision'] = precision_score(y_test, preds)
-    metrics['recall'] = recall_score(y_test, preds)
+    metrics['precision'] = precision_score(y_test, preds, zero_division=0)
+    metrics['recall'] = recall_score(y_test, preds, zero_division=0)
     
+    if suppress == True:
+        return model, metrics
+        
     # score
     print('Accuracy: {0:.4f}'.format(metrics['accuracy']))
 
@@ -130,7 +65,7 @@ def evaluate_model(model, X_test, y_test, threshold=.5, c_matrix=True, r_curve=T
     
     # Confusion Matrix
     if c_matrix == True:
-        plot_confusion_matrix(model, X_test, y_test)
+        plot_confusion_matrix(model, y_test, preds)
 
     # ROC curve
     if r_curve == True:
@@ -150,7 +85,7 @@ def init_metrics_file():
     idx = pd.MultiIndex.from_product([['LogReg', 'LGBM', 'KNC'],
                                       ['accuracy', 'f1-score', 'auc-roc', 'precision', 'recall']],
                                      names=['Classifier', 'Metric'])
-    col = ['1_unbalanced', '2_weighted', '3_balanced', '4_with_distance', '5_with_angle', '6_with_player_ids', '6_with_player_ids_weighted', '7_with_player_stats', '7_with_player_stats_weighted', '8_with_player_salary', '8_with_player_salary_weighted', '9_short_dist','9_short_dist_weighted', '10_long_dist', '10_long_dist_weighted' ]
+    col = ['1_unbalanced', '2_weighted', '3_balanced', '4_with_distance', '5_with_angle', '6_with_player_ids', '7_with_player_stats', '8_with_player_salary', '9_short_dist', '10_long_dist', '11_tuned']
 
     df = pd.DataFrame('-', idx, col)
     df.to_csv('data/results.csv')
