@@ -88,6 +88,10 @@ The core of the project are five jupyter notebooks (ordered by name) and the fil
 
 <img src="data/images/4_regression.jpg" alt="NHL" width="500" height="200">
 
+[**5_nhl_multiple_classifiers.ipynb**](4_nhl_4_nhl_multiple_classifiers.ipynb) - goal prediction using logistic regression, LightGBM classifier, K-Neighbors classifier. Balancing the dataset. Using new predictive features distance and angle in all classifiers.
+
+<img src="data/images/balanced_target.jpg" alt="NHL" width="250" height="150">
+
 [**6_nhl_player_features.ipynb**](6_nhl_player_features.ipynb) - Introducing new predictive features extracted from players data.
 
 <img src="data/images/5_features.jpg" alt="NHL" width="500" height="200">
